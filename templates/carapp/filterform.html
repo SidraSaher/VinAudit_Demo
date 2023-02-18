@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %} Home {% endblock title %}
+
+{% block body %} 
+<div class="main-content">
+
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0 font-size-18">Form Filters</h4>
+
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Forms</a></li>
+                                <li class="breadcrumb-item active">Filter Form</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Filter Form </h4>
+                            <p class="card-title-desc">Filter Market value of car based on car year make and model.</p>
+                            <form class="needs-validation" novalidate  action="index" method='POST' id="filterForm">
+                                {% csrf_token %}
+                              
+                                {% if messages %}
+                                <ul class="messages">
+                                    {% for message in messages %}
+                                    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-4">
+                                            <label for="validationCustom01" class="form-label">Year Make Model </label>
+                                            {{form.year_make_model}}
+                                            <div class="valid-feedback">
+                                                Looks good!
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-4">
+                                            <label for="validationCustom01" class="form-label">Mileage </label>
+                                            {{form.mileage}}
+                                            <div class="valid-feedback">
+                                                Looks good!
+                                            </div>
+                                        </div>
+                                    </div>
+                                   
+                                    
+                                </div>
+                                
+
+                               
+                                
+                                
+                                
+                                
+                                <div>
+                                    <button class="btn btn-primary" type="submit">Submit form</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- end card -->
+                </div> <!-- end col -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+
+                                <h4 class="card-title">View Cars Data (Market Value:{{average_price}} $)</h4>
+                                <p class="card-title-desc">View top listing of top 100 values used to compute market value
+                                </p>
+
+                                <table id="datatable" class="table align-middle table-striped dt-responsive  nowrap w-100">
+                                    <thead class="table-light">
+                                    <tr>
+                                        <th>Vehicle</th>
+                                        <th>Price</th>
+                                        <th>Mileage</th>
+                                        <th>Location</th>
+                                 
+
+                                    </tr>
+                                    </thead>
+
+
+                                    <tbody>
+                                    {% for sc in similar_cars %}
+                                    <tr>
+                                        <td>{{sc.year}}&nbsp;{{sc.make}}&nbsp;{{sc.model}}</td>
+                                        <td>{{sc.listing_price}} $</td>
+                                        <td>{{sc.listing_mileage}}</td>
+                                        <td>{{sc.dealer_street}}&nbsp;{{sc.dealer_city}}&nbsp;{{sc.dealer_state}}&nbsp;{{sc.dealer_zip}}</td>
+                                        
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                    </tbody>
+                                </table>
+                               
+                            </div>
+                        </div>
+                    </div> <!-- end col -->
+                </div> <!-- end row -->
+
+
+            </div>
+        </div>
+    </div>
+    
+    
+{% endblock body %}              
+{% block javascripts %}
+    <script>
+        $("#id_country_code").change(function () {
+          var url = $("#filterForm").attr("data-cities-url");  // get the url of the `load_cities` view
+          var countryId = $(this).val();  // get the selected country ID from the HTML input
+    
+          $.ajax({                       // initialize an AJAX request
+            url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+            data: {
+              'country_code': countryId       // add the country id to the GET parameters
+            },
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+              $("#id_state_code").html(data);  // replace the contents of the city input with the data that came from the server
+            }
+          });
+    
+        });
+
+        $("#id_headquater_country_code").change(function () {
+            var url = $("#filterForm").attr("data-hq-url");  // get the url of the `load_cities` view
+            var countryId = $(this).val();  // get the selected country ID from the HTML input
+      
+            $.ajax({                       // initialize an AJAX request
+              url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+              data: {
+                'headquater_country_code': countryId       // add the country id to the GET parameters
+              },
+              success: function (data) {   // `data` is the return of the `load_cities` view function
+                $("#id_headquater_state_code").html(data);  // replace the contents of the city input with the data that came from the server
+              }
+            });
+      
+          });
+      </script>
+      {% endblock javascripts %}
